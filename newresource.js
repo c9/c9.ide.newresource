@@ -35,7 +35,7 @@ define(function(require, exports, module) {
 
         var readonly = c9.readonly;
 
-        var loaded = true;
+        var loaded = false;
         function load(callback){
             if (loaded) return false;
             loaded = true;
@@ -127,11 +127,16 @@ define(function(require, exports, module) {
                     sel = trFiles.selected;
                 }
 
-                if (sel)
-                    path = sel.getAttribute("path");
+                path = sel.getAttribute("path");
+                if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
+                    path = path.replace(/\/[^\/]*$/, "/");
             }
+
             if (!path)
                 path = "/";
+            else if (!/\/$/.test(path))
+                path += "/";
+
             return path;
         }
 
@@ -144,9 +149,6 @@ define(function(require, exports, module) {
             if (!path)
                 path = getDirPath();
 
-            if (!/\/$/.test(path))
-                path += "/";
-
             var name = "Untitled", count = 0;
             var filePath;
             while (tabs.findPage(filePath = path + name + (count || "") + type))
@@ -156,7 +158,7 @@ define(function(require, exports, module) {
                 path     : filePath,
                 value    : value || "",
                 active   : true,
-                init: true,
+                init     : true,
                 document : {
                     meta : {
                         newfile : true
