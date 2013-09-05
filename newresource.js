@@ -158,7 +158,6 @@ define(function(require, exports, module) {
                 path     : filePath,
                 value    : value || "",
                 active   : true,
-                init     : true,
                 document : {
                     meta : {
                         newfile : true
