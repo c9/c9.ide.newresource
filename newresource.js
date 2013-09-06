@@ -1,10 +1,9 @@
 /**
- * Refactor Module for the Cloud9 IDE
+ * NewResource Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-/*global define apf*/
 "use strict";
 define(function(require, exports, module) {
     main.consumes = [
@@ -23,6 +22,7 @@ define(function(require, exports, module) {
         var commands    = imports.commands;
         var tabs        = imports.tabs;
         var tree        = imports.tree;
+        var apf         = imports.apf;
 
         var markup    = require("text!./newresource.xml");
         // ui elements
@@ -30,22 +30,21 @@ define(function(require, exports, module) {
 
         /***** Initialization *****/
 
-        var plugin = new Plugin("Ajax.org", main.consumes);
-        var emit   = plugin.getEmitter();
-
+        var plugin   = new Plugin("Ajax.org", main.consumes);
+        var emit     = plugin.getEmitter();
         var readonly = c9.readonly;
 
-        var loaded = false;
+        var loaded   = false;
         function load(callback){
             if (loaded) return false;
             loaded = true;
 
             commands.addCommand({
-                name: "newfile",
-                hint: "create a new file resource",
-                msg: "New file created.",
-                bindKey: {mac: "Option-Shift-N", win: "Ctrl-N"},
-                exec: function () {
+                name   : "newfile",
+                hint   : "create a new file resource",
+                msg    : "New file created.",
+                bindKey: { mac: "Option-Shift-N", win: "Ctrl-N" },
+                exec   : function () {
                     newFile();
                 }
             }, plugin);
@@ -54,7 +53,7 @@ define(function(require, exports, module) {
                 name: "newfiletemplate",
                 hint: "create a new directory resource",
                 msg: "New directory created.",
-                bindKey: {mac: "Option-Ctrl-N", win: "Alt-N"},
+                bindKey: { mac: "Option-Ctrl-N", win: "Alt-N" },
                 exec: function () {
                     newFileTemplate();
                 }
@@ -63,25 +62,25 @@ define(function(require, exports, module) {
             commands.addCommand({
                 name: "newfolder",
                 hint: "open the new file template dialog",
-                bindKey: {mac: "Option-Ctrl-Shift-N", win: "Ctrl-Shift-N"},
+                bindKey: { mac: "Option-Ctrl-Shift-N", win: "Ctrl-Shift-N" },
                 exec: function () {
                     newFolder();
                 }
             }, plugin);
 
-            menus.addItemByPath("File/New File", new apf.item({
+            menus.addItemByPath("File/New File", new ui.item({
                 disabled: readonly,
                 command : "newfile"
             }), 100, plugin);
-            menus.addItemByPath("File/New From Template...", new apf.item({
+            menus.addItemByPath("File/New From Template...", new ui.item({
                 disabled: readonly,
                 command : "newfiletemplate"
             }), 200, plugin);
-            menus.addItemByPath("File/New Folder", new apf.item({
+            menus.addItemByPath("File/New Folder", new ui.item({
                 disabled: readonly,
                 command : "newfolder"
             }), 300, plugin);
-            menus.addItemByPath("File/~", new apf.divider(), 400, plugin);
+            menus.addItemByPath("File/~", new ui.divider(), 400, plugin);
         }
 
         var drawn = false;
@@ -90,9 +89,10 @@ define(function(require, exports, module) {
             drawn = true;
 
             ui.insertMarkup(null, markup, plugin);
-            winNewFileTemplate = plugin.getElement("winNewFileTemplate");
-            lstFileTemplates = plugin.getElement("lstFileTemplates");
-            btnFileTemplateSave = plugin.getElement("btnFileTemplateSave");
+
+            winNewFileTemplate    = plugin.getElement("winNewFileTemplate");
+            lstFileTemplates      = plugin.getElement("lstFileTemplates");
+            btnFileTemplateSave   = plugin.getElement("btnFileTemplateSave");
             btnFileTemplateCancel = plugin.getElement("btnFileTemplateCancel");
 
             btnFileTemplateSave.on("click", function(){
@@ -132,25 +132,24 @@ define(function(require, exports, module) {
                     path = path.replace(/\/[^\/]*$/, "/");
             }
 
-            if (!path)
-                path = "/";
-            else if (!/\/$/.test(path))
+            path = path || "/";
+            if (!/\/$/.test(path))
                 path += "/";
 
             return path;
         }
 
         function newFile(type, value, path) {
+            if (readonly) return;
+
             draw();
-            if (readonly)
-                return;
-            if (!type) type = "";
 
-            if (!path)
-                path = getDirPath();
-
-            var name = "Untitled", count = 0;
             var filePath;
+            var name  = "Untitled";
+            var count = 0;
+            type      = type || "";
+            path      = path || getDirPath();
+
             while (tabs.findPage(filePath = path + name + (count || "") + type))
                 count++;
 
@@ -173,15 +172,17 @@ define(function(require, exports, module) {
             winNewFileTemplate.show();
         }
 
-        function newFolder() {
+        function newFolder(name, dirPath, callback) {
             draw();
 
-            var dirPath = getDirPath();
+            callback    = callback || function () {};
+            name        = name     || "Untitled";
+            dirPath     = dirPath  || getDirPath();
 
             createFolder(0);
             function createFolder(count) {
-                var name = "Untitled" + (count || "");
-                var path = dirPath + name;
+                var dirName = name + (count || "");
+                var path    = dirPath + dirName;
                 fs.mkdir(path, function (err) {
                     if (err)
                         createFolder(count+1);
@@ -190,10 +191,10 @@ define(function(require, exports, module) {
                         trFiles.focus();
                         trFiles.select(folder);
                         apf.activeElement.startRename();
+                        callback();
                     }
                 });
             }
-            return false;
         }
 
         /***** Lifecycle *****/
@@ -208,18 +209,36 @@ define(function(require, exports, module) {
         });
         plugin.on("unload", function(){
             loaded = false;
+            drawn  = false;
         });
 
         /***** Register and define API *****/
 
         /**
-         * Finder implementation using nak
+         * newresource API
          **/
         plugin.freezePublicAPI({
+            /**
+             * Create a new file in the workspace
+             *
+             * @param type {String} the encoding of the content for the file
+             * @param value {String} the content of the file
+             * @param path {String} the path of the file to write
+             */
             newFile: newFile,
 
+            /**
+             * Show the new file template window to create a file
+             */
             newFileTemplate: newFileTemplate,
 
+            /**
+             * Create a new folder in the workspace and starts its renaming
+             *
+             * @param name {String} the name of the folder to create
+             * @param dirPath {String} the directory to create the folder into
+             * @param callback(err) {Function} called after the folder is created
+             */
             newFolder: newFolder
         });
 
