@@ -150,7 +150,7 @@ define(function(require, exports, module) {
             type      = type || "";
             path      = path || getDirPath();
 
-            while (tabs.findPage(filePath = path + name + (count || "") + type))
+            while (tabs.findTab(filePath = path + name + (count || "") + type))
                 count++;
 
             tabs.open({
