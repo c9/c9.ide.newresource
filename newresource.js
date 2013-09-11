@@ -221,9 +221,9 @@ define(function(require, exports, module) {
             /**
              * Create a new file in the workspace
              *
-             * @param type {String} the encoding of the content for the file
-             * @param value {String} the content of the file
-             * @param path {String} the path of the file to write
+             * @param {String} type the encoding of the content for the file
+             * @param {String} value the content of the file
+             * @param {String} path the path of the file to write
              */
             newFile: newFile,
 
@@ -235,8 +235,8 @@ define(function(require, exports, module) {
             /**
              * Create a new folder in the workspace and starts its renaming
              *
-             * @param name {String} the name of the folder to create
-             * @param dirPath {String} the directory to create the folder into
+             * @param {String} name the name of the folder to create
+             * @param {String} dirPath the directory to create the folder into
              * @param callback(err) {Function} called after the folder is created
              */
             newFolder: newFolder
