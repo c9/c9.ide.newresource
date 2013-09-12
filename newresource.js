@@ -7,7 +7,7 @@
 "use strict";
 define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "c9", "ui", "menus", "tabs", "fs", "commands",
+        "plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
         "tree", "apf"
     ];
     main.provides = ["newresource"];
@@ -20,7 +20,7 @@ define(function(require, exports, module) {
         var fs          = imports.fs;
         var menus       = imports.menus;
         var commands    = imports.commands;
-        var tabs        = imports.tabs;
+        var tabs        = imports.tabManager;
         var tree        = imports.tree;
         var apf         = imports.apf;
 
