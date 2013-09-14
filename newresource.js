@@ -7,14 +7,14 @@
 "use strict";
 define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
+        "Plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
         "tree", "apf"
     ];
     main.provides = ["newresource"];
     return main;
 
     function main(options, imports, register) {
-        var Plugin      = imports.plugin;
+        var Plugin      = imports.Plugin;
         var c9          = imports.c9;
         var ui          = imports.ui;
         var fs          = imports.fs;
