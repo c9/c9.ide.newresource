@@ -1,10 +1,10 @@
 /**
  * NewResource Module for the Cloud9 IDE
- *
- * @copyright 2010, Ajax.org B.V.
+ * @author Mostafa Eweda <mostafa@c9.io>
+ * @copyright 2013, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-"use strict";
+ "use strict";
 define(function(require, exports, module) {
     main.consumes = [
         "Plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
@@ -108,31 +108,17 @@ define(function(require, exports, module) {
                 btnFileTemplateSave.dispatchEvent('click');
             });
 
-            tree.getElement("trFiles", function(element){
-                trFiles = element;
-            });
-
             emit("draw");
         }
 
         /***** Methods *****/
 
         function getDirPath () {
-            var path;
-            if (trFiles) {
-                var sel = trFiles.selected;
+            var node = tree.getSelectedNode();
+            var path = node.getAttribute("path");
+            if (node.getAttribute("type") == "file" || node.tagName == "file")
+                path = path.replace(/\/[^\/]*$/, "/");
 
-                if (!sel) {
-                    trFiles.select(trFiles.$model.queryNode('folder'));
-                    sel = trFiles.selected;
-                }
-
-                path = sel.getAttribute("path");
-                if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
-                    path = path.replace(/\/[^\/]*$/, "/");
-            }
-
-            path = path || "/";
             if (!/\/$/.test(path))
                 path += "/";
 
@@ -172,29 +158,8 @@ define(function(require, exports, module) {
             winNewFileTemplate.show();
         }
 
-        function newFolder(name, dirPath, callback) {
-            draw();
-
-            callback    = callback || function () {};
-            name        = name     || "Untitled";
-            dirPath     = dirPath  || getDirPath();
-
-            createFolder(0);
-            function createFolder(count) {
-                var dirName = name + (count || "");
-                var path    = dirPath + dirName;
-                fs.mkdir(path, function (err) {
-                    if (err)
-                        createFolder(count+1);
-                    var folder = trFiles.$model.queryNode("//folder[@path='" + path + "']");
-                    if (folder) {
-                        trFiles.focus();
-                        trFiles.select(folder);
-                        apf.activeElement.startRename();
-                        callback();
-                    }
-                });
-            }
+        function newFolder(path, callback) {
+            tree.createFolder(path, false, callback || function(){});
         }
 
         /***** Lifecycle *****/
