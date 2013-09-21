@@ -7,20 +7,20 @@
  "use strict";
 define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "c9", "ui", "menus", "tabs", "fs", "commands",
+        "Plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
         "tree", "apf"
     ];
     main.provides = ["newresource"];
     return main;
 
     function main(options, imports, register) {
-        var Plugin      = imports.plugin;
+        var Plugin      = imports.Plugin;
         var c9          = imports.c9;
         var ui          = imports.ui;
         var fs          = imports.fs;
         var menus       = imports.menus;
         var commands    = imports.commands;
-        var tabs        = imports.tabs;
+        var tabs        = imports.tabManager;
         var tree        = imports.tree;
         var apf         = imports.apf;
 
@@ -136,7 +136,7 @@ define(function(require, exports, module) {
             type      = type || "";
             path      = path || getDirPath();
 
-            while (tabs.findPage(filePath = path + name + (count || "") + type))
+            while (tabs.findTab(filePath = path + name + (count || "") + type))
                 count++;
 
             tabs.open({
@@ -186,9 +186,9 @@ define(function(require, exports, module) {
             /**
              * Create a new file in the workspace
              *
-             * @param type {String} the encoding of the content for the file
-             * @param value {String} the content of the file
-             * @param path {String} the path of the file to write
+             * @param {String} type the encoding of the content for the file
+             * @param {String} value the content of the file
+             * @param {String} path the path of the file to write
              */
             newFile: newFile,
 
@@ -200,7 +200,8 @@ define(function(require, exports, module) {
             /**
              * Create a new folder in the workspace and starts its renaming
              *
-             * @param path {String} the path of the directory to create
+             * @param {String} name the name of the folder to create
+             * @param {String} dirPath the directory to create the folder into
              * @param callback(err) {Function} called after the folder is created
              */
             newFolder: newFolder
