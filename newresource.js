@@ -1,11 +1,6 @@
-/**
- * NewResource Module for the Cloud9 IDE
- * @author Mostafa Eweda <mostafa@c9.io>
- * @copyright 2013, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- */
- "use strict";
 define(function(require, exports, module) {
+    "use strict";
+    
     main.consumes = [
         "Plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
         "tree", "apf"
@@ -43,7 +38,7 @@ define(function(require, exports, module) {
                 name   : "newfile",
                 hint   : "create a new file resource",
                 msg    : "New file created.",
-                bindKey: { mac: "Option-Shift-N", win: "Ctrl-N" },
+                bindKey: { mac: "Option-N", win: "Ctrl-N" },
                 exec   : function () {
                     newFile();
                 }
@@ -53,7 +48,7 @@ define(function(require, exports, module) {
                 name: "newfiletemplate",
                 hint: "create a new directory resource",
                 msg: "New directory created.",
-                bindKey: { mac: "Option-Ctrl-N", win: "Alt-N" },
+                bindKey: { mac: "Option-Shift-N", win: "Alt-N" },
                 exec: function () {
                     newFileTemplate();
                 }
@@ -62,7 +57,7 @@ define(function(require, exports, module) {
             commands.addCommand({
                 name: "newfolder",
                 hint: "open the new file template dialog",
-                bindKey: { mac: "Option-Ctrl-Shift-N", win: "Ctrl-Shift-N" },
+                bindKey: { mac: "Ctrl-Shift-N", win: "Ctrl-Shift-N" },
                 exec: function () {
                     newFolder();
                 }
@@ -180,15 +175,17 @@ define(function(require, exports, module) {
         /***** Register and define API *****/
 
         /**
-         * newresource API
+         * Adds File->New File and File->New Folder menu items as well as the
+         * commands for opening a new file as well as an API.
+         * @singleton
          **/
         plugin.freezePublicAPI({
             /**
              * Create a new file in the workspace
              *
-             * @param {String} type the encoding of the content for the file
-             * @param {String} value the content of the file
-             * @param {String} path the path of the file to write
+             * @param {String} type   The encoding of the content for the file
+             * @param {String} value  The content of the file
+             * @param {String} path   The path of the file to write
              */
             newFile: newFile,
 
@@ -200,9 +197,10 @@ define(function(require, exports, module) {
             /**
              * Create a new folder in the workspace and starts its renaming
              *
-             * @param {String} name the name of the folder to create
-             * @param {String} dirPath the directory to create the folder into
-             * @param callback(err) {Function} called after the folder is created
+             * @param {String}   name          The name of the folder to create
+             * @param {String}   dirPath       The directory to create the folder into
+             * @param {Function} callback      Called after the folder is created
+             * @param {Error}    callback.err  The error object if any error occured.
              */
             newFolder: newFolder
         });
