@@ -21,7 +21,7 @@ define(function(require, exports, module) {
 
         var markup    = require("text!./newresource.xml");
         // ui elements
-        var trFiles, winNewFileTemplate, btnFileTemplateSave, btnFileTemplateCancel, lstFileTemplates;
+        var winNewFileTemplate, btnFileTemplateSave, btnFileTemplateCancel, lstFileTemplates;
 
         /***** Initialization *****/
 
