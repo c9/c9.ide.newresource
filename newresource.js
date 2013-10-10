@@ -26,9 +26,10 @@ define(function(require, exports, module) {
 
         /***** Initialization *****/
 
-        var plugin   = new Plugin("Ajax.org", main.consumes);
-        var emit     = plugin.getEmitter();
+        var plugin = new Plugin("Ajax.org", main.consumes);
+        var emit = plugin.getEmitter();
         var readonly = c9.readonly;
+        var defaultExtension = "";
 
         var loaded   = false;
         function load(callback){
@@ -131,8 +132,9 @@ define(function(require, exports, module) {
             var count = 0;
             type      = type || "";
             path      = path || getDirPath();
+            var ext = defaultExtension;
 
-            while (tabs.findTab(filePath = path + name + (count || "") + type))
+            while (tabs.findTab(filePath = path + name + (count || "") + type + ext))
                 count++;
 
             tabs.open({
@@ -207,7 +209,16 @@ define(function(require, exports, module) {
              * @param {Function} callback      Called after the folder is created
              * @param {Error}    callback.err  The error object if any error occured.
              */
-            newFolder: newFolder
+            newFolder: newFolder,
+            
+            /**
+             * Sets the default extension for newly created files
+             * @param extension  The default extension to use
+             */
+            set defaultExtension(extension) {
+                defaultExtension = extension ? "." + extension : "";
+                tree.defaultExtension = extension;
+            }
         });
 
         register(null, {
