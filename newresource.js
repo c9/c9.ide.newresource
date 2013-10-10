@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
-        "tree", "apf"
+        "tree", "apf", "save"
     ];
     main.provides = ["newresource"];
     return main;
@@ -18,6 +18,7 @@ define(function(require, exports, module) {
         var tabs        = imports.tabManager;
         var tree        = imports.tree;
         var apf         = imports.apf;
+        var save        = imports.save;
 
         var markup    = require("text!./newresource.xml");
         // ui elements
@@ -63,7 +64,7 @@ define(function(require, exports, module) {
                 }
             }, plugin);
 
-            menus.addItemByPath("File/New File", new ui.item({
+            menus.addItemByPath("File/New File...", new ui.item({
                 disabled: readonly,
                 command : "newfile"
             }), 100, plugin);
@@ -110,8 +111,8 @@ define(function(require, exports, module) {
 
         function getDirPath () {
             var node = tree.getSelectedNode();
-            var path = node.getAttribute("path");
-            if (node.getAttribute("type") == "file" || node.tagName == "file")
+            var path = node.path || node.getAttribute("path");
+            if (node.getAttribute ? node.getAttribute("type") == "file" || node.tagName == "file" : !node.isFolder)
                 path = path.replace(/\/[^\/]*$/, "/");
 
             if (!/\/$/.test(path))
@@ -143,7 +144,11 @@ define(function(require, exports, module) {
                         newfile : true
                     }
                 }
-            }, function(){});
+            }, function(err, tab) {
+                if (err)
+                    return; // reported already
+                save.saveAs(tab, function() {});
+            });
 
             // ide.dispatchEvent("track_action", {type: "template", template: type});
         }
