@@ -149,7 +149,6 @@ define(function(require, exports, module) {
             }, function(err, tab) {
                 if (err)
                     return; // reported already
-                save.saveAs(tab, function() {});
             });
 
             // ide.dispatchEvent("track_action", {type: "template", template: type});
