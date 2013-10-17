@@ -37,32 +37,25 @@ define(function(require, exports, module) {
             loaded = true;
 
             commands.addCommand({
-                name   : "newfile",
-                hint   : "create a new file resource",
-                msg    : "New file created.",
-                bindKey: { mac: "Option-N", win: "Ctrl-N" },
-                exec   : function () {
-                    newFile();
-                }
+                name    : "newfile",
+                hint    : "create a new file resource",
+                msg     : "New file created.",
+                bindKey : { mac: "Ctrl-N", win: "Ctrl-N" },
+                exec    : function () { newFile(); }
             }, plugin);
 
             commands.addCommand({
-                name: "newfiletemplate",
-                hint: "create a new directory resource",
-                msg: "New directory created.",
-                bindKey: { mac: "Option-Shift-N", win: "Alt-N" },
-                exec: function () {
-                    newFileTemplate();
-                }
+                name    : "newfiletemplate",
+                hint    : "open the new file template dialog",
+                msg     : "New directory created.",
+                bindKey : { mac: "Ctrl-Shift-N", win: "Ctrl-Shift-N" },
+                exec    : function() { newFileTemplate(); }
             }, plugin);
 
             commands.addCommand({
-                name: "newfolder",
-                hint: "open the new file template dialog",
-                bindKey: { mac: "Ctrl-Shift-N", win: "Ctrl-Shift-N" },
-                exec: function () {
-                    newFolder();
-                }
+                name    : "newfolder",
+                hint    : "create a new directory resource",
+                exec    : function(){ newFolder(); }
             }, plugin);
 
             menus.addItemByPath("File/New File...", new ui.item({
@@ -129,7 +122,7 @@ define(function(require, exports, module) {
 
             var filePath;
             var name  = "Untitled";
-            var count = 0;
+            var count = 1;
             type      = type || "";
             path      = path || getDirPath();
             var ext = defaultExtension;
