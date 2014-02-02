@@ -58,7 +58,7 @@ define(function(require, exports, module) {
                 exec    : function(){ newFolder(); }
             }, plugin);
 
-            menus.addItemByPath("File/New File...", new ui.item({
+            menus.addItemByPath("File/New File", new ui.item({
                 disabled: readonly,
                 command : "newfile"
             }), 100, plugin);
