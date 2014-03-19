@@ -70,7 +70,7 @@ define(function(require, exports, module) {
                 disabled: readonly,
                 command : "newfolder"
             }), 300, plugin);
-            menus.addItemByPath("File/~", new ui.divider(), 400, plugin);
+            // menus.addItemByPath("File/~", new ui.divider(), 400, plugin);
         }
 
         var drawn = false;
