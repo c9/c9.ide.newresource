@@ -9,18 +9,18 @@ define(function(require, exports, module) {
     return main;
 
     function main(options, imports, register) {
-        var Plugin      = imports.Plugin;
-        var c9          = imports.c9;
-        var ui          = imports.ui;
-        var fs          = imports.fs;
-        var menus       = imports.menus;
-        var commands    = imports.commands;
-        var tabs        = imports.tabManager;
-        var tree        = imports.tree;
-        var apf         = imports.apf;
-        var save        = imports.save;
+        var Plugin = imports.Plugin;
+        var c9 = imports.c9;
+        var ui = imports.ui;
+        var fs = imports.fs;
+        var menus = imports.menus;
+        var commands = imports.commands;
+        var tabs = imports.tabManager;
+        var tree = imports.tree;
+        var apf = imports.apf;
+        var save = imports.save;
 
-        var markup    = require("text!./newresource.xml");
+        var markup = require("text!./newresource.xml");
         // ui elements
         var winNewFileTemplate, btnFileTemplateSave, btnFileTemplateCancel, lstFileTemplates;
 
@@ -31,44 +31,44 @@ define(function(require, exports, module) {
         var readonly = c9.readonly;
         var defaultExtension = "";
 
-        var loaded   = false;
-        function load(callback){
+        var loaded = false;
+        function load(callback) {
             if (loaded) return false;
             loaded = true;
 
             commands.addCommand({
-                name    : "newfile",
-                hint    : "create a new file resource",
-                msg     : "New file created.",
-                bindKey : { mac: "Ctrl-N", win: "Ctrl-N" },
-                exec    : function () { newFile(); }
+                name: "newfile",
+                hint: "create a new file resource",
+                msg: "New file created.",
+                bindKey: { mac: "Ctrl-N", win: "Ctrl-N" },
+                exec: function () { newFile(); }
             }, plugin);
 
             commands.addCommand({
-                name    : "newfiletemplate",
-                hint    : "open the new file template dialog",
-                msg     : "New directory created.",
-                bindKey : { mac: "Ctrl-Shift-N", win: "Ctrl-Shift-N" },
-                exec    : function() { newFileTemplate(); }
+                name: "newfiletemplate",
+                hint: "open the new file template dialog",
+                msg: "New directory created.",
+                bindKey: { mac: "Ctrl-Shift-N", win: "Ctrl-Shift-N" },
+                exec: function() { newFileTemplate(); }
             }, plugin);
 
             commands.addCommand({
-                name    : "newfolder",
-                hint    : "create a new directory resource",
-                exec    : function(){ newFolder(); }
+                name: "newfolder",
+                hint: "create a new directory resource",
+                exec: function(){ newFolder(); }
             }, plugin);
 
             menus.addItemByPath("File/New File", new ui.item({
                 disabled: readonly,
-                command : "newfile"
+                command: "newfile"
             }), 100, plugin);
             menus.addItemByPath("File/New From Template...", new ui.item({
                 disabled: readonly,
-                command : "newfiletemplate"
+                command: "newfiletemplate"
             }), 200, plugin);
             menus.addItemByPath("File/New Folder", new ui.item({
                 disabled: readonly,
-                command : "newfolder"
+                command: "newfolder"
             }), 300, plugin);
             // menus.addItemByPath("File/~", new ui.divider(), 400, plugin);
         }
@@ -80,9 +80,9 @@ define(function(require, exports, module) {
 
             ui.insertMarkup(null, markup, plugin);
 
-            winNewFileTemplate    = plugin.getElement("winNewFileTemplate");
-            lstFileTemplates      = plugin.getElement("lstFileTemplates");
-            btnFileTemplateSave   = plugin.getElement("btnFileTemplateSave");
+            winNewFileTemplate = plugin.getElement("winNewFileTemplate");
+            lstFileTemplates = plugin.getElement("lstFileTemplates");
+            btnFileTemplateSave = plugin.getElement("btnFileTemplateSave");
             btnFileTemplateCancel = plugin.getElement("btnFileTemplateCancel");
 
             btnFileTemplateSave.on("click", function(){
@@ -121,22 +121,22 @@ define(function(require, exports, module) {
             draw();
 
             var filePath;
-            var name  = "Untitled";
+            var name = "Untitled";
             var count = 1;
-            type      = type || "";
-            path      = path || getDirPath();
+            type = type || "";
+            path = path || getDirPath();
             var ext = defaultExtension;
 
             while (tabs.findTab(filePath = path + name + (count || "") + type + ext))
                 count++;
 
             tabs.open({
-                path     : filePath,
-                value    : value || "",
-                active   : true,
-                document : {
-                    meta : {
-                        newfile : true
+                path: filePath,
+                value: value || "",
+                active: true,
+                document: {
+                    meta: {
+                        newfile: true
                     }
                 }
             }, function(err, tab) {
@@ -168,7 +168,7 @@ define(function(require, exports, module) {
         });
         plugin.on("unload", function(){
             loaded = false;
-            drawn  = false;
+            drawn = false;
         });
 
         /***** Register and define API *****/
