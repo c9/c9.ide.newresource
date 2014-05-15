@@ -66,10 +66,10 @@ define(function(require, exports, module) {
                 disabled: readonly,
                 command: "newfiletemplate"
             }), 200, plugin);
-            menus.addItemByPath("File/New Folder", new ui.item({
-                disabled: readonly,
-                command: "newfolder"
-            }), 300, plugin);
+            // menus.addItemByPath("File/New Folder", new ui.item({
+            //     disabled: readonly,
+            //     command: "newfolder"
+            // }), 300, plugin);
             // menus.addItemByPath("File/~", new ui.divider(), 400, plugin);
         }
 
