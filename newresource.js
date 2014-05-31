@@ -155,8 +155,9 @@ define(function(require, exports, module) {
         function newFolder(path, callback) {
             tree.createFolder(path, false, callback || function(){});
         }
-
+        
         /***** Lifecycle *****/
+        
         plugin.on("load", function(){
             load();
         });
@@ -202,6 +203,11 @@ define(function(require, exports, module) {
              * @param {Error}    callback.err  The error object if any error occured.
              */
             newFolder: newFolder,
+            
+            /**
+             * 
+             */
+            open: open,
             
             /**
              * Sets the default extension for newly created files
