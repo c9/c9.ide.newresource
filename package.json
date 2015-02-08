@@ -9,15 +9,13 @@
         "url": "http://github.com/c9/c9.ide.newresource.git"
     },
     "plugins": {
-        "plugin": {
-            "newresource": {},
-            "open": {}
-        }
+        "newresource": {},
+        "open": {}
     },
     "categories": [
         "core"
     ],
     "licenses": [
-        ""
+        "MIT"
     ]
 }
