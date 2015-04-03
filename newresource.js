@@ -154,6 +154,28 @@ define(function(require, exports, module) {
             tree.createFolder(path, false, callback || function(){});
         }
         
+        function addFileTemplate(data, plugin) {
+            if (!drawn)
+                return plugin.on("draw", addFileTemplate.bind(this, data, plugin));
+            // if (!plugin.loaded) return;
+            
+            data = data.split("\n");
+            
+            var firstLine = data.shift().replace(/\/\*|\*\//g, "").trim();
+            var template = { text: data.join("\n") };
+            firstLine.split(";").forEach(function(n){
+                if (!n) return;
+                var info = n.split(":");
+                template[info[0].trim()] = info[1].trim();
+            });
+            
+            plugin.getElement("mdlFileTemplates").appendXml(
+                '<item value="' + template.caption 
+                    + '" icon="page_white_text.png" caption="' + template.caption 
+                    + '"><![CDATA[' + template.text + ']]></item>'
+            );
+        }
+        
         /***** Lifecycle *****/
         
         plugin.on("load", function(){
@@ -205,6 +227,11 @@ define(function(require, exports, module) {
              * 
              */
             open: open,
+            
+            /**
+             * 
+             */
+            addFileTemplate: addFileTemplate,
             
             /**
              * Sets the default extension for newly created files
