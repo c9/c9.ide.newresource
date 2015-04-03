@@ -2,8 +2,7 @@ define(function(require, exports, module) {
     "use strict";
     
     main.consumes = [
-        "Plugin", "c9", "ui", "menus", "tabManager", "fs", "commands",
-        "tree", "apf", "save"
+        "Plugin", "c9", "ui", "menus", "tabManager", "commands", "tree"
     ];
     main.provides = ["newresource"];
     return main;
@@ -12,24 +11,23 @@ define(function(require, exports, module) {
         var Plugin = imports.Plugin;
         var c9 = imports.c9;
         var ui = imports.ui;
-        var fs = imports.fs;
         var menus = imports.menus;
         var commands = imports.commands;
         var tabs = imports.tabManager;
         var tree = imports.tree;
-        var apf = imports.apf;
-        var save = imports.save;
 
         var markup = require("text!./newresource.xml");
-        // ui elements
-        var winNewFileTemplate, btnFileTemplateSave, btnFileTemplateCancel, lstFileTemplates;
 
         /***** Initialization *****/
 
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit = plugin.getEmitter();
+        
         var readonly = c9.readonly;
         var defaultExtension = "";
+        
+        var winNewFileTemplate, btnFileTemplateSave, btnFileTemplateCancel;
+        var lstFileTemplates;
 
         var loaded = false;
         function load(callback) {
@@ -161,15 +159,14 @@ define(function(require, exports, module) {
         plugin.on("load", function(){
             load();
         });
-        plugin.on("enable", function(){
-
-        });
-        plugin.on("disable", function(){
-
-        });
         plugin.on("unload", function(){
             loaded = false;
             drawn = false;
+            winNewFileTemplate = null;
+            btnFileTemplateSave = null;
+            btnFileTemplateCancel = null;
+            lstFileTemplates = null;
+            defaultExtension = null;
         });
 
         /***** Register and define API *****/
