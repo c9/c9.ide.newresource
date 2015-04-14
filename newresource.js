@@ -16,19 +16,16 @@ define(function(require, exports, module) {
         var tabs = imports.tabManager;
         var tree = imports.tree;
 
-        var markup = require("text!./newresource.xml");
+        var templates = options.templates || require("text!./default.templates");
 
         /***** Initialization *****/
 
         var plugin = new Plugin("Ajax.org", main.consumes);
-        var emit = plugin.getEmitter();
+        // var emit = plugin.getEmitter();
         
         var readonly = c9.readonly;
         var defaultExtension = "";
         
-        var winNewFileTemplate, btnFileTemplateSave, btnFileTemplateCancel;
-        var lstFileTemplates;
-
         var loaded = false;
         function load(callback) {
             if (loaded) return false;
@@ -42,13 +39,13 @@ define(function(require, exports, module) {
                 exec: function () { newFile(); }
             }, plugin);
 
-            commands.addCommand({
-                name: "newfiletemplate",
-                hint: "open the new file template dialog",
-                msg: "New directory created.",
-                bindKey: { mac: "Ctrl-Shift-N", win: "Ctrl-Shift-N" },
-                exec: function() { newFileTemplate(); }
-            }, plugin);
+            // commands.addCommand({
+            //     name: "newfiletemplate",
+            //     hint: "open the new file template dialog",
+            //     msg: "New directory created.",
+            //     bindKey: { mac: "Ctrl-Shift-N", win: "Ctrl-Shift-N" },
+            //     exec: function() { newFileTemplate(); }
+            // }, plugin);
 
             commands.addCommand({
                 name: "newfolder",
@@ -60,51 +57,26 @@ define(function(require, exports, module) {
                 disabled: readonly,
                 command: "newfile"
             }), 100, plugin);
-            menus.addItemByPath("File/New From Template...", new ui.item({
+            menus.addItemByPath("File/New From Template", new ui.item({
                 disabled: readonly,
-                command: "newfiletemplate"
             }), 200, plugin);
+            
             // menus.addItemByPath("File/New Folder", new ui.item({
             //     disabled: readonly,
             //     command: "newfolder"
             // }), 300, plugin);
             // menus.addItemByPath("File/~", new ui.divider(), 400, plugin);
+            
+            addFileTemplate(templates, plugin);
         }
-
-        var drawn = false;
-        function draw () {
-            if (drawn) return;
-            drawn = true;
-
-            ui.insertMarkup(null, markup, plugin);
-
-            winNewFileTemplate = plugin.getElement("winNewFileTemplate");
-            lstFileTemplates = plugin.getElement("lstFileTemplates");
-            btnFileTemplateSave = plugin.getElement("btnFileTemplateSave");
-            btnFileTemplateCancel = plugin.getElement("btnFileTemplateCancel");
-
-            btnFileTemplateSave.on("click", function(){
-                newFile('.' + lstFileTemplates.value, lstFileTemplates.selected.firstChild.nodeValue);
-                winNewFileTemplate.hide();
-            });
-
-            btnFileTemplateCancel.on("click", function(){
-                winNewFileTemplate.hide();
-            });
-
-            lstFileTemplates.on("afterchoose", function() {
-                btnFileTemplateSave.dispatchEvent('click');
-            });
-
-            emit("draw");
-        }
-
+        
         /***** Methods *****/
 
         function getDirPath () {
             var node = tree.getSelectedNode();
             var path = node.path || node.getAttribute("path");
-            if (node.getAttribute ? node.getAttribute("type") == "file" || node.tagName == "file" : !node.isFolder)
+            if (node.getAttribute ? node.getAttribute("type") == "file" 
+              || node.tagName == "file" : !node.isFolder)
                 path = path.replace(/\/[^\/]*$/, "/");
 
             if (!/\/$/.test(path))
@@ -115,8 +87,6 @@ define(function(require, exports, module) {
 
         function newFile(type, value, path) {
             if (readonly) return;
-
-            draw();
 
             var filePath;
             var name = "Untitled";
@@ -145,35 +115,55 @@ define(function(require, exports, module) {
             // ide.dispatchEvent("track_action", {type: "template", template: type});
         }
 
-        function newFileTemplate(){
-            draw();
-            winNewFileTemplate.show();
-        }
-
         function newFolder(path, callback) {
             tree.createFolder(path, false, callback || function(){});
         }
         
-        function addFileTemplate(data, plugin) {
-            if (!drawn)
-                return plugin.on("draw", addFileTemplate.bind(this, data, plugin));
-            // if (!plugin.loaded) return;
+        function parse(data){
+            var list = [];
+            var context = { template: [] };
+            list.push(context);
             
-            data = data.split("\n");
-            
-            var firstLine = data.shift().replace(/\/\*|\*\//g, "").trim();
-            var template = { text: data.join("\n") };
-            firstLine.split(";").forEach(function(n){
-                if (!n) return;
-                var info = n.split(":");
-                template[info[0].trim()] = info[1].trim();
+            var restart;
+            data.split("\n").forEach(function(line){
+                if (/^(?:\t| {4})(.*)/.test(line)) {
+                    context.template.push(RegExp.$1);
+                    restart = true;
+                    return;
+                }
+                else if (restart) {
+                    list.push(context = { template: [] });
+                    restart = false;
+                }
+                
+                if (!line) return;
+                
+                var m = line.match(/^(\w+) (.*)$/);
+                context[m[1]] = m[2];
             });
             
-            plugin.getElement("mdlFileTemplates").appendXml(
-                '<item value="' + template.caption 
-                    + '" icon="page_white_text.png" caption="' + template.caption 
-                    + '"><![CDATA[' + template.text + ']]></item>'
-            );
+            return list;
+        }
+        
+        function addFileTemplate(data, forPlugin) {
+            // if (!plugin.loaded) return;
+            
+            var list = parse(data);
+            
+            list.forEach(function(item){
+                menus.addItemByPath("File/New From Template/" + item.caption, new ui.item({
+                    disabled: readonly,
+                    onclick: function(){
+                        newFile(item.filename, item.template.join("\n"));
+                    }
+                }), 200, forPlugin);
+            });
+            
+            // plugin.addOther(function(){
+            //     list.forEach(functon(item){
+            //         delete templates[name];
+            //     });
+            // });
         }
         
         /***** Lifecycle *****/
@@ -183,11 +173,6 @@ define(function(require, exports, module) {
         });
         plugin.on("unload", function(){
             loaded = false;
-            drawn = false;
-            winNewFileTemplate = null;
-            btnFileTemplateSave = null;
-            btnFileTemplateCancel = null;
-            lstFileTemplates = null;
             defaultExtension = null;
         });
 
@@ -207,11 +192,6 @@ define(function(require, exports, module) {
              * @param {String} path   The path of the file to write
              */
             newFile: newFile,
-
-            /**
-             * Show the new file template window to create a file
-             */
-            newFileTemplate: newFileTemplate,
 
             /**
              * Create a new folder in the workspace and starts its renaming
