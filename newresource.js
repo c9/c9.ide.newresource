@@ -139,7 +139,8 @@ define(function(require, exports, module) {
                 if (!line) return;
                 
                 var m = line.match(/^(\w+) (.*)$/);
-                context[m[1]] = m[2];
+                if (m)
+                    context[m[1]] = m[2];
             });
             
             return list;
