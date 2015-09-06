@@ -35,7 +35,7 @@ define(function(require, exports, module) {
                 name: "newfile",
                 hint: "create a new file resource",
                 msg: "New file created.",
-                bindKey: { mac: "Ctrl-N", win: "Ctrl-N" },
+                bindKey: { mac: "Ctrl-N", win: "Alt-N" },
                 exec: function () { newFile(); }
             }, plugin);
 
