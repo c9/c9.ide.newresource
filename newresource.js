@@ -101,7 +101,7 @@ define(function(require, exports, module) {
             tabs.open({
                 path: filePath,
                 value: value || "",
-                active: true,
+                focus: true,
                 document: {
                     meta: {
                         newfile: true
@@ -203,11 +203,6 @@ define(function(require, exports, module) {
              * @param {Error}    callback.err  The error object if any error occured.
              */
             newFolder: newFolder,
-            
-            /**
-             * 
-             */
-            open: open,
             
             /**
              * 
