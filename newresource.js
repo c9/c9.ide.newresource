@@ -50,7 +50,7 @@ define(function(require, exports, module) {
             commands.addCommand({
                 name: "newfolder",
                 hint: "create a new directory resource",
-                exec: function(){ newFolder(); }
+                exec: function() { newFolder(); }
             }, plugin);
 
             menus.addItemByPath("File/New File", new ui.item({
@@ -116,23 +116,23 @@ define(function(require, exports, module) {
         }
 
         function newFolder(path, callback) {
-            tree.createFolder(path, false, callback || function(){});
+            tree.createFolder(path, false, callback || function() {});
         }
         
-        function parse(data){
+        function parse(data) {
             var list = [];
-            var context = { template: [] };
+            var context = { template: []};
             list.push(context);
             
             var restart;
-            data.split("\n").forEach(function(line){
+            data.split("\n").forEach(function(line) {
                 if (/^(?:\t| {4})(.*)/.test(line)) {
                     context.template.push(RegExp.$1);
                     restart = true;
                     return;
                 }
                 else if (restart) {
-                    list.push(context = { template: [] });
+                    list.push(context = { template: []});
                     restart = false;
                 }
                 
@@ -151,10 +151,10 @@ define(function(require, exports, module) {
             
             var list = parse(data);
             
-            list.forEach(function(item){
+            list.forEach(function(item) {
                 menus.addItemByPath("File/New From Template/" + item.caption, new ui.item({
                     disabled: readonly,
-                    onclick: function(){
+                    onclick: function() {
                         newFile(item.filename, item.template.join("\n"));
                     }
                 }), 200, forPlugin);
@@ -169,10 +169,10 @@ define(function(require, exports, module) {
         
         /***** Lifecycle *****/
         
-        plugin.on("load", function(){
+        plugin.on("load", function() {
             load();
         });
-        plugin.on("unload", function(){
+        plugin.on("unload", function() {
             loaded = false;
             defaultExtension = null;
         });

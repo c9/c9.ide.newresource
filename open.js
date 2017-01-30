@@ -20,13 +20,13 @@ define(function(require, exports, module) {
             loaded = true;
             
             menus.addItemByPath("File/Open...", new ui.item({ 
-                command : "navigate" 
+                command: "navigate" 
             }), 400, plugin);
         }
         
         /***** Methods *****/
         
-        function open(){
+        function open() {
             commands.exec("navigate");
         }
         
